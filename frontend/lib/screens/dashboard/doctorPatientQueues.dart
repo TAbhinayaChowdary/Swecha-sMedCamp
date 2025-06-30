@@ -330,428 +330,427 @@ class _DoctorPatientQueuesPageState extends State<DoctorPatientQueuesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD),
-      appBar: AppBar(
-        title: const Text('Doctor Queues', style: TextStyle(color: Colors.black)),
-        backgroundColor: const Color(0xFF007BFF),
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black),
-            onPressed: _fetchDoctorQueues,
-            tooltip: 'Refresh Queues',
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchDoctorQueues,
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.refresh),
-        tooltip: 'Refresh Queues',
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width > 800 ? 800 : MediaQuery.of(context).size.width - 32,
-            ),
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Color(0xFFBDBDBD), width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.10),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 8),
-                const Text(
-                  'Doctor Queues',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+    final gradient = const LinearGradient(
+      colors: [Color(0xFFB2EBF2), Color(0xFFE3F2FD)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+    return Container(
+      decoration: BoxDecoration(gradient: gradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('View Queues', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _fetchDoctorQueues,
+          backgroundColor: Colors.orange,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.refresh),
+          tooltip: 'Refresh Queues',
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width > 800 ? 800 : MediaQuery.of(context).size.width - 32,
+              ),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: Colors.grey.shade400, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.teal.withOpacity(0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                if (_isLoading)
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-                      const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007BFF)),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Loading doctors and queues...',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  )
-                else if (_error != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE3F2FD),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.red.shade300),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                   Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.teal[50],
+                      child: Text('📋', style: TextStyle(fontSize: 32)),
                     ),
-                    child: Column(
+                  ).animate().fadeIn(duration: 400.ms).scale(),
+                  Text(
+                    'View Queues',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[800],
+                    ),
+                    textAlign: TextAlign.center,
+                  ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2),
+                  const SizedBox(height: 32),
+                  if (_isLoading)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Colors.red.shade700,
-                          size: 32,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Colors.red.shade700,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(120, 40),
-                            textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: _fetchDoctorQueues,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
-                else if (_doctors.isEmpty)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE3F2FD),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.people_outline,
-                          color: Colors.grey.shade600,
-                          size: 48,
+                        const SizedBox(height: 40),
+                        const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007BFF)),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'No doctors available',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        Text(
+                          'Loading doctors and queues...',
+                          style: GoogleFonts.quicksand(
+                            fontSize: 16,
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'There are currently no doctors in the system.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                        const SizedBox(height: 40),
                       ],
-                    ),
-                  )
-                else
-                  Column(
-                    children: [
-                      // Doctor cards
-                      ..._doctors.asMap().entries.map((entry) {
-                        final idx = entry.key;
-                        final doc = entry.value;
-                        final docId = doc['doctor_id'];
-                        final queueCount = _queueCounts[docId] ?? 0;
-                        final nextPatient = _nextPatients[docId];
-                        final statusValue = _status[docId];
-                        
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE3F2FD),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Color(0xFFBDBDBD), width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.08),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                    )
+                  else if (_error != null)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE3F2FD),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade400),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: Colors.red.shade700,
+                            size: 32,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Doctor name header
-                                Row(
+                          const SizedBox(height: 8),
+                          Text(
+                            _error!,
+                            style: GoogleFonts.quicksand(
+                              color: Colors.red.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(120, 40),
+                              textStyle: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: _fetchDoctorQueues,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    )
+                  else if (_doctors.isEmpty)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE3F2FD),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF80DEEA)),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            color: Colors.grey.shade600,
+                            size: 48,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No doctors available',
+                            style: GoogleFonts.quicksand(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'There are currently no doctors in the system.',
+                            style: GoogleFonts.quicksand(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Column(
+                      children: [
+                        ..._doctors.asMap().entries.map((entry) {
+                          final idx = entry.key;
+                          final doc = entry.value;
+                          final docId = doc['doctor_id'];
+                          final queueCount = _queueCounts[docId] ?? 0;
+                          final nextPatient = _nextPatients[docId];
+                          final statusValue = _status[docId];
+                          return Animate(
+                            effects: [
+                              FadeEffect(duration: 400.ms, delay: (idx * 80).ms),
+                              SlideEffect(duration: 400.ms, delay: (idx * 80).ms, begin: const Offset(0, 0.1)),
+                            ],
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 24),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.92),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: const Color(0xFF80DEEA), width: 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.teal.withOpacity(0.07),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: Colors.orange,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: const Icon(
-                                        Icons.medical_services,
-                                        color: Colors.white,
-                                        size: 24,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            doc['doctor_name'],
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: Colors.black87,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 2,
+                                    // Doctor name header
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.teal.shade200,
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Doctor ID: ${doc['doctor_id']}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey.shade600,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                
-                                // Queue information
-                                Column(
-                                  children: [
-                                    // Queue count
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: queueCount > 0 ? Colors.green.shade50 : Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: queueCount > 0 ? Colors.green.shade200 : Colors.grey.shade300),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.queue,
-                                            color: queueCount > 0 ? Colors.green : Colors.grey,
-                                            size: 24,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            '$queueCount',
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                              color: queueCount > 0 ? Colors.green : Colors.grey,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Patients in Queue',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey.shade600,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    
-                                    // Next patient
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: nextPatient != null ? Colors.orange.shade50 : Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: nextPatient != null ? Colors.orange.shade200 : Colors.grey.shade300),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
+                                          child: const Text('👩‍⚕️', style: TextStyle(fontSize: 24)),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Icon(
-                                                Icons.person,
-                                                color: nextPatient != null ? Colors.orange : Colors.grey,
-                                                size: 20,
-                                              ),
-                                              const SizedBox(width: 8),
                                               Text(
-                                                'Next Patient',
-                                                style: TextStyle(
-                                                  fontSize: 14,
+                                                doc['doctor_name'],
+                                                style: GoogleFonts.quicksand(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.grey.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 8),
-                                          if (nextPatient != null && nextPatient['book_no'] != null) ...[
-                                            Text(
-                                              'Book #${nextPatient['book_no']}',
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black87,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                            if (nextPatient['name'] != null)
-                                              Text(
-                                                '${nextPatient['name']}',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey.shade600,
+                                                  fontSize: 20,
+                                                  color: Colors.teal.shade900,
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                               ),
-                                          ] else
-                                            Text(
-                                              'No patients',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey.shade500,
-                                                fontStyle: FontStyle.italic,
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                'Doctor ID: ${doc['doctor_id']}',
+                                                style: GoogleFonts.quicksand(
+                                                  fontSize: 14,
+                                                  color: Colors.teal.shade400,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                               ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                
-                                // Action button
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: nextPatient != null && nextPatient['book_no'] != null 
-                                          ? (statusValue == 'Processing...' ? Colors.orange : Colors.green)
-                                          : Colors.grey.shade400,
-                                      foregroundColor: Colors.white,
-                                      minimumSize: const Size.fromHeight(48),
-                                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    onPressed: nextPatient != null && nextPatient['book_no'] != null && 
-                                              (statusValue != 'Assigned' && statusValue != 'Processing...')
-                                          ? () => _handleAssign(doc)
-                                          : null,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        if (statusValue == 'Processing...')
-                                          const SizedBox(
-                                            width: 16,
-                                            height: 16,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                            ),
-                                          )
-                                        else
-                                          const Icon(Icons.assignment, size: 20),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          nextPatient != null && nextPatient['book_no'] != null && statusValue != null && statusValue != 'Error'
-                                              ? statusValue
-                                              : 'Assign Patient',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                
-                                // Error message
-                                if (nextPatient != null && nextPatient['book_no'] != null && statusValue == 'Error')
-                                  Container(
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(top: 12),
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.red.shade200),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.error_outline,
-                                          color: Colors.red.shade700,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            'Assignment failed. Please try again.',
-                                            style: TextStyle(
-                                              color: Colors.red.shade700,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                              ],
+                                    const SizedBox(height: 20),
+                                    // Queue information
+                                    Column(
+                                      children: [
+                                        // Queue count
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: queueCount > 0 ? Colors.green.shade50 : Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: queueCount > 0 ? Colors.green.shade200 : const Color(0xFF80DEEA)),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              const Text('📝', style: TextStyle(fontSize: 22)),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                '$queueCount',
+                                                style: GoogleFonts.quicksand(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: queueCount > 0 ? Colors.green : Colors.grey,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Patients in Queue',
+                                                style: GoogleFonts.quicksand(
+                                                  fontSize: 12,
+                                                  color: Colors.grey.shade600,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        // Next patient
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: nextPatient != null ? Colors.orange.shade50 : Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: nextPatient != null ? Colors.orange.shade200 : const Color(0xFF80DEEA)),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Text('💊', style: TextStyle(fontSize: 18)),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    'Next Patient',
+                                                    style: GoogleFonts.quicksand(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.grey.shade700,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              if (nextPatient != null && nextPatient['book_no'] != null) ...[
+                                                Text(
+                                                  'Book #${nextPatient['book_no']}',
+                                                  style: GoogleFonts.quicksand(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black87,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                                if (nextPatient['name'] != null)
+                                                  Text(
+                                                    '${nextPatient['name']}',
+                                                    style: GoogleFonts.quicksand(
+                                                      fontSize: 14,
+                                                      color: Colors.grey.shade600,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                              ] else
+                                                Text(
+                                                  'No patients',
+                                                  style: GoogleFonts.quicksand(
+                                                    fontSize: 14,
+                                                    color: Colors.grey.shade500,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    // Action button
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: nextPatient != null && nextPatient['book_no'] != null 
+                                              ? (statusValue == 'Processing...' ? Colors.orange : Colors.green)
+                                              : Colors.grey.shade400,
+                                          foregroundColor: Colors.white,
+                                          minimumSize: const Size.fromHeight(48),
+                                          textStyle: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        onPressed: nextPatient != null && nextPatient['book_no'] != null && 
+                                                  (statusValue != 'Assigned' && statusValue != 'Processing...')
+                                              ? () => _handleAssign(doc)
+                                              : null,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            if (statusValue == 'Processing...')
+                                              const SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                ),
+                                              )
+                                            else
+                                              const Text('✅', style: TextStyle(fontSize: 18)),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              nextPatient != null && nextPatient['book_no'] != null && statusValue != null && statusValue != 'Error'
+                                                  ? statusValue
+                                                  : 'Assign Patient',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    // Error message
+                                    if (nextPatient != null && nextPatient['book_no'] != null && statusValue == 'Error')
+                                      Container(
+                                        width: double.infinity,
+                                        margin: const EdgeInsets.only(top: 12),
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade50,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.red.shade200),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.error_outline,
+                                              color: Colors.red.shade700,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                'Assignment failed. Please try again.',
+                                                style: GoogleFonts.quicksand(
+                                                  color: Colors.red.shade700,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-              ],
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         ),
