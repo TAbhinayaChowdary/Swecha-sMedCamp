@@ -194,8 +194,10 @@ class _MedicinePickupPageState extends State<MedicinePickupPage> {
         Uri.parse('$_baseUrl/patient-history/medicine-verification/$_bookNo'),
       );
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Verification data received: ${json.encode(data)}');
         setState(() {
-          verificationData = json.decode(response.body);
+          verificationData = data;
           isVerificationLoading = false;
         });
       } else {
@@ -660,13 +662,25 @@ class MedicineVerificationDialog extends StatelessWidget {
                           final index = entry.key;
                           final med = entry.value;
                           final schedule = med['dosage_schedule'];
+                          print('Schedule data for medicine ${med['medicine_id']}: $schedule');
                           String scheduleStr = 'No schedule';
-                          if (schedule != null) {
-                            scheduleStr =
-                                '${schedule['days']} days\n'
-                                '${schedule['morning'] == true ? '✓ Morning ' : ''}'
-                                '${schedule['afternoon'] == true ? '✓ Afternoon ' : ''}'
-                                '${schedule['night'] == true ? '✓ Night' : ''}';
+                          if (schedule != null && schedule is Map) {
+                            final days = schedule['days'] ?? 0;
+                            final morning = schedule['morning'] ?? false;
+                            final afternoon = schedule['afternoon'] ?? false;
+                            final night = schedule['night'] ?? false;
+                            
+                            print('Parsed schedule - days: $days, morning: $morning, afternoon: $afternoon, night: $night');
+                            
+                            if (days > 0) {
+                              scheduleStr = '$days days\n';
+                              if (morning) scheduleStr += '✓ Morning ';
+                              if (afternoon) scheduleStr += '✓ Afternoon ';
+                              if (night) scheduleStr += '✓ Night';
+                              if (!morning && !afternoon && !night) {
+                                scheduleStr += 'No specific times';
+                              }
+                            }
                           }
                           return DataRow(
                             color: MaterialStateProperty.all(

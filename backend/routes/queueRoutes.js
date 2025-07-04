@@ -109,6 +109,35 @@ router.get('/next/:doctor_id', async (req, res) => {
 });
 
 /**
+ * GET /api/queue/next/:doctor_name
+ * Alternative endpoint that finds queue entries by doctor name
+ */
+router.get('/next/name/:doctor_name', async (req, res) => {
+  const doctorName = req.params.doctor_name;
+
+  try {
+    // Query all queue entries containing this doctor name, sorted by queue_no ascending
+    const entries = await Queue.find(
+      { 'doctor_list.doctor_name': doctorName },
+      { book_no: 1, queue_no: 1 }
+    )
+    .sort({ queue_no: 1 })
+    .limit(1)
+    .lean();
+
+    if (!entries || entries.length === 0) {
+      return res.status(404).json({ message: 'No queue entry found for this doctor' });
+    }
+
+    // Return the earliest book_no
+    return res.json({ book_no: entries[0].book_no });
+  } catch (err) {
+    console.error('Error fetching next queue entry by name:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/**
  * DELETE /api/queue/remove
  * Removes a queue entry by book_no
  * Expects: { book_no: Number }
@@ -151,6 +180,38 @@ router.get('/count/:doctorId', async (req, res) => {
   } catch (error) {
     console.error('Error counting queues for doctor', doctorId, error);
     return res.status(500).json({ message: 'Error counting queues' });
+  }
+});
+
+// GET /api/queue/count/name/:doctor_name
+// Returns the number of Queue documents where the given doctor name appears in doctor_list
+router.get('/count/name/:doctor_name', async (req, res) => {
+  const doctorName = req.params.doctor_name;
+
+  try {
+    // Find all queues where doctor_list contains this doctor name, then count them
+    const matchingQueues = await Queue.find(
+      { 'doctor_list.doctor_name': doctorName },
+      '_id'
+    );
+    const count = matchingQueues.length;
+
+    return res.status(200).json({ doctor_name: doctorName, queueCount: count });
+  } catch (error) {
+    console.error('Error counting queues for doctor', doctorName, error);
+    return res.status(500).json({ message: 'Error counting queues' });
+  }
+});
+
+// GET /api/queue/all
+// Returns all queue entries
+router.get('/all', async (req, res) => {
+  try {
+    const allQueues = await Queue.find({}).populate('doctor_list');
+    res.status(200).json(allQueues);
+  } catch (err) {
+    console.error('Error fetching all queues:', err);
+    res.status(500).json({ message: 'Error fetching all queues' });
   }
 });
 

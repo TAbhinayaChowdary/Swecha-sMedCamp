@@ -39,13 +39,33 @@ router.post('/doctor-prescription', async (req, res) => {
     }
 
     // Add prescriptions to the visit
-    visit.medicines_prescribed.push(...prescriptions);
+    const formattedPrescriptions = prescriptions.map(prescription => {
+      const formattedPrescription = {
+        medicine_id: prescription.medicine_id,
+        quantity: prescription.quantity
+      };
+      
+      // If dosage schedule data is provided, format it properly
+      if (prescription.days !== undefined || prescription.morning !== undefined || 
+          prescription.afternoon !== undefined || prescription.night !== undefined) {
+        formattedPrescription.dosage_schedule = {
+          days: prescription.days ? parseInt(prescription.days) : 0,
+          morning: prescription.morning === true || prescription.morning === 'true',
+          afternoon: prescription.afternoon === true || prescription.afternoon === 'true',
+          night: prescription.night === true || prescription.night === 'true'
+        };
+      }
+      
+      return formattedPrescription;
+    });
+    
+    visit.medicines_prescribed.push(...formattedPrescriptions);
 
     await patientHistory.save();
 
     // Log the prescription action
     if (req._user && req._user.id) {
-      const medicinesSummary = prescriptions.map(med =>
+      const medicinesSummary = formattedPrescriptions.map(med =>
         `${med.medicine_id} (Qty: ${med.quantity})`
       ).join(', ');
 
@@ -103,6 +123,7 @@ router.get('/medicine-pickup/:book_no', async (req, res) => {
           medicine_id: med.medicine_id,
           quantity: med.quantity,
           medicine_formulation: inventoryItem?.medicine_formulation || 'N/A',
+          dosage_schedule: med.dosage_schedule,
           batches
         };
       });
@@ -261,6 +282,10 @@ router.get('/medicine-verification/:book_no', async (req, res) => {
     if (!visit) {
       return res.status(404).json({ message: 'No records found for this month.' });
     }
+    
+    // Debug logging to check prescription data structure
+    console.log('Medicine verification data for book_no:', book_no);
+    console.log('Prescribed medicines:', JSON.stringify(visit.medicines_prescribed, null, 2));
     
     // Log the verification check
     if (req._user && req._user.id) {

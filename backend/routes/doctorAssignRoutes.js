@@ -8,10 +8,10 @@ const { logUserAction } = require('../utils/logger');
 // Fetch all doctors
 router.get('/get_doctors', async (req, res) => {
   try {
-    // Only select needed fields
+    // Only select needed fields including doctor_id
     const doctors = await Doctor.find(
       { doctor_availability: true },
-      'doctor_name specialization'
+      'doctor_id doctor_name specialization'
     );
     
     // Log successful retrieval of available doctors

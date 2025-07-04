@@ -188,7 +188,7 @@ class _VitalsPageState extends State<VitalsPage> {
                         TextFormField(
                           controller: _patientIdController,
                           decoration: InputDecoration(
-                            labelText: 'Book Number',
+                            labelText: 'Book Number *',
                             prefixIcon: Icon(Icons.book, color: Colors.teal[400]),
                           ),
                           cursorColor: Colors.teal,
@@ -198,7 +198,7 @@ class _VitalsPageState extends State<VitalsPage> {
                         TextFormField(
                           controller: _bpController,
                           decoration: InputDecoration(
-                            labelText: 'BP (systolic/diastolic)',
+                            labelText: 'BP (systolic/diastolic) *',
                             prefixIcon: Icon(Icons.favorite, color: Colors.teal[400]),
                           ),
                           cursorColor: Colors.teal,
@@ -208,7 +208,7 @@ class _VitalsPageState extends State<VitalsPage> {
                         TextFormField(
                           controller: _pulseController,
                           decoration: InputDecoration(
-                            labelText: 'Pulse',
+                            labelText: 'Pulse *',
                             prefixIcon: Icon(Icons.favorite, color: Colors.teal[400]),
                           ),
                           cursorColor: Colors.teal,
@@ -220,7 +220,7 @@ class _VitalsPageState extends State<VitalsPage> {
                           keyboardType: TextInputType.number,
                           style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                            labelText: 'Random Blood Sugar (mg/dL) *',
+                            labelText: 'RBS (mg/dL) *',
                             prefixIcon: Icon(Icons.bloodtype, color: Colors.teal[400]),
                           ),
                           cursorColor: Colors.teal,
