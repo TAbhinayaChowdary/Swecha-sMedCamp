@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Medical Camp',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xFF007BFF),
         colorScheme: ColorScheme.fromSwatch(
@@ -121,7 +122,7 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Swecha\'s Medical Camp',
+                'Swecha\'s Med Camp',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
